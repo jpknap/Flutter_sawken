@@ -13,24 +13,32 @@ class FormBotellaTransaccion extends StatefulWidget {
 class _FormBotellaTransaccionState extends State<FormBotellaTransaccion> {
 
   int cantidad=0,recaudado=0, cervezaId = 1, transaccionTipoId = 1;
-  Cerveza _cervezaIRA = new Cerveza() ;
-  Cerveza _cervezaIPA = new Cerveza() ;
-  Cerveza _cervezaStout = new Cerveza();
+  Cerveza _cervezaIRA = new Cerveza(1) ;
+  Cerveza _cervezaIPA = new Cerveza(2) ;
+  Cerveza _cervezaStout = new Cerveza(3);
   String _radioTipoTransaccion = "tipo_transaccion";
   int _radioValue = 1;
-  Future<bool> _saveTransaccion (dynamic formFields) async {
+
+  Future<bool> _saveTransaccion () async {
     Transaccion transaccion =  new Transaccion (
       usuarioToken: Store.storeLoadUserLogin().getTokenUser(),
-      comentario: formFields['comentario'],
-      tipoId: formFields['tipo_id'],
-      recaudado: formFields['recaudado'],
-      cantidad: formFields['cantidad'],
-      cervezaId: formFields['cerveza_id'],
+      comentario: this.comentario.text,
+      recaudado: this.txt.text,
+      lista_venta: [
+                    { "id_cerveza" : this._cervezaIRA.id, "cantidad" : this._cervezaIRA.cantidad},
+                    { "id_cerveza" : this._cervezaIPA.id, "cantidad" : this._cervezaIPA.cantidad},
+                    { "id_cerveza" : this._cervezaStout.id, "cantidad" : this._cervezaStout.cantidad},
+                    ],
+      tipo_transaccion: this._radioValue.toString(),
     );
-    bool reponse = await Store.saveProduccionTransaccion(transaccion);
-    return reponse;
+    print (transaccion.getMapItems());
+   // bool reponse = await Store.saveProduccionTransaccion(transaccion);
+    return true;
   }
+  
+  
   var txt = new TextEditingController(text: "0");
+  var comentario = new TextEditingController(text: "");
   
   void actionTapCerveza (int cant , String action, Cerveza cerveza_tipo) {
     if (action == 'sum'){
@@ -71,17 +79,20 @@ class _FormBotellaTransaccionState extends State<FormBotellaTransaccion> {
           ),
            persistentFooterButtons: <Widget>[
             FlatButton(
-            color: Colors.blue[400],
-            padding: EdgeInsets.fromLTRB(25,5,25,5),
-            onPressed: () {
-            },
-            child: Text(
-              "Guardar",
-              style: TextStyle(
-                color: Colors.white
-              ),
-            ))],
-          
+              disabledColor: Colors.grey,
+              color: Colors.blue[400],
+              padding: EdgeInsets.fromLTRB(25,5,25,5),
+              onPressed: () {
+                this._saveTransaccion();
+              },
+              child: Text(
+                "Guardar",
+                style: TextStyle(
+                  color: Colors.white
+                  ),
+                )
+              )
+            ],      
           body: Container(
                 padding: EdgeInsets.all(10),
                   child: 
@@ -207,7 +218,7 @@ class _FormBotellaTransaccionState extends State<FormBotellaTransaccion> {
                             new Radio(
                               value: 1,
                               groupValue: _radioValue,
-                              onChanged: _handleRadioValueChange,
+                              onChanged: (value) => _handleRadioValueChange(value),
                             ),
                             new Text(
                               'Venta',
@@ -216,7 +227,7 @@ class _FormBotellaTransaccionState extends State<FormBotellaTransaccion> {
                             new Radio(
                               value: 2,
                               groupValue: _radioValue,
-                              onChanged: _handleRadioValueChange,
+                              onChanged: (value) => _handleRadioValueChange(value),
                             ),
                             new Text(
                               'Regalo',
@@ -227,7 +238,7 @@ class _FormBotellaTransaccionState extends State<FormBotellaTransaccion> {
                             new Radio(
                               value: 3,
                               groupValue: _radioValue,
-                              onChanged: _handleRadioValueChange,
+                              onChanged: (value) => _handleRadioValueChange(value),
                             ),
                             new Text(
                               'Merma',
@@ -263,6 +274,7 @@ class _FormBotellaTransaccionState extends State<FormBotellaTransaccion> {
                               fontSize: 20.0, fontWeight: FontWeight.bold),
                         ) ,
                     new TextField(
+                      controller: comentario,
                       maxLines: null,
                       keyboardType: TextInputType.multiline,
                   ),])
@@ -273,10 +285,15 @@ class _FormBotellaTransaccionState extends State<FormBotellaTransaccion> {
         
     );
     }
+
 }
 
 class Cerveza {
+  int id;
   int _cantidad = 0;
+  Cerveza (int id) {
+    this.id=id;
+  }
   int get cantidad => _cantidad;
   set cantidad(int cantidad) {
     _cantidad = cantidad;

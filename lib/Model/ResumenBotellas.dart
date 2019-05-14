@@ -1,6 +1,8 @@
 class ResumenBotellas {
 final String id, fechaCrea, inicio, cervezaNombre,cervezaEstilo, stock, merma, regalo, venta,recaudado;
   ResumenBotellas({this.id, this.fechaCrea, this.inicio, this.cervezaNombre, this.cervezaEstilo, this.stock, this.merma,this.regalo,this.venta,this.recaudado});
+  
+  
   factory ResumenBotellas.fromJson(dynamic json) {
     return ResumenBotellas(
       id: json['ID'] as String,
